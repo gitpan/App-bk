@@ -1,5 +1,10 @@
 Revision history for App-bk
 
+0.02    24th June 2011
+        Allow tests to be run as root user
+        Improve documentation
+        Disallow building on Windows servers
+
 0.01    23rd May 2011
         First version, released on an unsuspecting world.
 

@@ -2,6 +2,12 @@ use strict;
 use warnings;
 use Module::Build;
 
+use Config;
+
+if($Config{osname} =~ m/mswin/i) {
+    die 'No support for OS',$/;
+}
+
 my $builder = Module::Build->new(
     meta_merge => {
         resources => {
@@ -37,7 +43,7 @@ my $builder = Module::Build->new(
         'File::Which'    => 0,
         'Test::Trap'     => 0,
     },
-    add_to_cleanup     => ['App-bk-*'],
+    add_to_cleanup     => ['App-bk-*', 't/file[12].txt.*'],
     create_makefile_pl => 'traditional',
     script_files       => 'bin',
 );
