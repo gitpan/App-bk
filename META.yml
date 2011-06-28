@@ -24,7 +24,7 @@ name: App-bk
 provides:
   App::bk:
     file: lib/App/bk.pm
-    version: 0.02
+    version: 0.03
 requires:
   English: 0
   File::Basename: 0
@@ -40,4 +40,4 @@ resources:
   license: http://dev.perl.org/licenses/
   repository:
     - http://github.com/duncs/perl-app-bk
-version: 0.02
+version: 0.03
