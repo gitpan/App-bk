@@ -11,8 +11,14 @@ if($Config{osname} =~ m/win/i) {
 my $builder = Module::Build->new(
     meta_merge => {
         resources => {
-            repository => [ 'http://github.com/duncs/perl-app-bk', ],
-            bugtracker => 'https://github.com/duncs/perl-app-bk/issues',
+            repository => {
+                url => 'https://github.com/duncs/perl-app-bk.git',
+                web => 'http://github.com/duncs/perl-app-bk',
+                type => 'git',
+            },
+            bugtracker => {
+                web => 'https://github.com/duncs/perl-app-bk/issues',
+            },
             homepage   => 'https://github.com/duncs/perl-app-bk',
         },
     },
@@ -32,6 +38,8 @@ my $builder = Module::Build->new(
         'File::Which'    => 0,
     },
     build_requires => {
+        'CPAN::Meta::Spec' => 2.133380,
+        'Module::Build'  => 0.42,
         'FindBin'        => 0,
         'Test::More'     => 0.94,
         'File::Basename' => 0,
@@ -43,6 +51,7 @@ my $builder = Module::Build->new(
         'File::Which'    => 0,
         'Test::Trap'     => 0,
     },
+    configure_requires => { 'Module::Build' => 0.42 },
     add_to_cleanup     => ['App-bk-*', 't/file[12].txt.*'],
     create_makefile_pl => 'traditional',
     script_files       => 'bin',

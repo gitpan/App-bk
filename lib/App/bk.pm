@@ -22,14 +22,15 @@ Version 0.05
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my %opts = (
-    'help|h|?'    => 0,
-    'man'         => 0,
-    'version|V'   => 0,
-    'debug:+'     => 0,
-    'directory|d' => 0,
+    'help|h|?'  => 0,
+    'man'       => 0,
+    'version|V' => 0,
+    'debug:+'   => 0,
+    'diff|d'    => 0,
+    'edit|e'    => 0,
 );
 my %options;
 
@@ -82,7 +83,7 @@ sub backup_files {
     foreach my $filename (@ARGV) {
         my ( $basename, $dirname ) = fileparse($filename);
 
-        # do this via savedir as we might move this somewhere else dir in future
+      # do this via savedir as we might move this somewhere else dir in future
         my $savedir = $dirname;
 
         logmsg( 2, "dirname=$dirname" );
@@ -100,6 +101,17 @@ sub backup_files {
 
         # compare the last file found with the current file
         my $last_backup = get_last_backup( $savedir, $basename );
+
+        if ( $options{diff} ) {
+            if ( !$last_backup ) {
+                print "'$filename' not previously backed up.", $/;
+            }
+            else {
+                print get_diff( $last_backup, $filename );
+            }
+            next;
+        }
+
         if ($last_backup) {
             logmsg( 1, "Found last backup as: $last_backup" );
 
@@ -131,6 +143,17 @@ sub backup_files {
         }
 
         logmsg( 0, "Backed up $filename to $savefilename" );
+    }
+
+    if ( $options{edit} ) {
+        my $editor 
+            = $ENV{EDITOR}
+            || $ENV{VISUAL}
+            || die 'Neither "EDITOR" nor "VISUAL" environment variables set',
+            $/;
+
+        print "Running: $editor @ARGV", $/;
+        exec("$editor @ARGV");
     }
 
     return 1;
@@ -181,6 +204,33 @@ sub get_chksum {
 
     ($chksum) = $chksum =~ m/^(\w+)\s/;
     return $chksum;
+}
+
+=head2 $binary = find_diff_binary();
+
+Locate a binary to use for diff
+
+=cut
+
+sub find_diff_binary {
+    return which('diff')
+        || die 'Unable to locate "diff"', $/;
+}
+
+=head2 $differences = get_diff ($old, $new);
+
+Get the differences between two files
+
+=cut
+
+sub get_diff {
+    my ( $old, $new ) = @_;
+
+    my $diff_binary = find_diff_binary();
+    my $differences = qx/$diff_binary -u $old $new/;
+    return $differences
+        ? $differences
+        : "No differences between '$old' and '$new'" . $/;
 }
 
 =head2 $filename = get_last_backup($file);
